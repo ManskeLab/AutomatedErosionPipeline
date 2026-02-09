@@ -34,6 +34,7 @@ INPUT_NAME=${INPUT_IMAGE##*/}
 INPUT_NAME=${INPUT_NAME%%.*}
 DATA_DIR=$INPUT_DIR/Dataset001_mcp/imagesTs/$INPUT_NAME
 mkdir -p $DATA_DIR
+cp $INPUT_IMAGE $DATA_DIR/${INPUT_NAME}_0000.nii.gz
 
 mkdir -p $OUT_DIR
 
