@@ -23,7 +23,7 @@ SCRIPT_DIR=$(dirname ${SCRIPT_DIR[0]})
 INPUT_DIR=/work/manske_lab/jobs/mcp_erosion/nnUNet_raw/Dataset001_mcp/imagesTs
 mkdir $INPUT_DIR
 
-SOURCE_DIR=/work/manske_lab/images/hrpqct/actus/actus_erosion_candidates
+SOURCE_DIR=$1
 ID=HR
 
 for INPUT_IMAGE in $SOURCE_DIR/*.nii*; do
