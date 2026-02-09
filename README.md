@@ -6,18 +6,19 @@
 - Soft-tissue–stripped MCP joint images from **HR-pQCT** or **SR-CBCT**
   - With **MC** and **PP** bone masks
 - Atlas, located in:
-  - `<PATH_TO_ATLAS>`
+  - `ATLAS_MC=/work/manske_lab/images/hrpqct/mcp_atlasses/$MCP/atlas_mc_aligned.nii.gz`
+  - `ATLAS_PP=/work/manske_lab/images/hrpqct/mcp_atlasses/$MCP/atlas_pp.nii.gz`
 
 ### Model Checkpoints
 
 #### MCP Stripping
-  /work/manske_lab/jobs/mcp_nnunet/nnUNet_results/Dataset001_hand/nnUNetTrainer__nnUNetPlans__3d_fullres/fold_all/checkpoint_best.pth
+  - `/work/manske_lab/jobs/mcp_nnunet/nnUNet_results/Dataset001_hand/nnUNetTrainer__nnUNetPlans__3d_fullres/fold_all/checkpoint_best.pth`
 #### Bone edge mask
-  /work/manske_lab/jobs/mcp_edge/nnUNet_results/Dataset001_mcp/nnUNetTrainer__nnUNetPlans__3d_fullres/fold_all/checkpoint_final.pth
+  - `/work/manske_lab/jobs/mcp_edge/nnUNet_results/Dataset001_mcp/nnUNetTrainer__nnUNetPlans__3d_fullres/fold_all/checkpoint_final.pth`
 #### Bone closed edge mask  
-  /work/manske_lab/jobs/mcp_closed_edge/nnUNet_results/Dataset001_mcp/nnUNetTrainerWithAttention__nnUNetPlans__3d_fullres/fold_all/checkpoint_final.pth
+  - `/work/manske_lab/jobs/mcp_closed_edge/nnUNet_results/Dataset001_mcp/nnUNetTrainerWithAttention__nnUNetPlans__3d_fullres/fold_all/checkpoint_final.pth`
 #### Erosion segmentation
-  /work/manske_lab/jobs/mcp_erosion/nnUNet_results/Dataset001_mcp/nnUNetTrainerWithAttention__nnUNetPlans__3d_fullres/fold_all/checkpoint_final.pth
+  - `/work/manske_lab/jobs/mcp_erosion/nnUNet_results/Dataset001_mcp/nnUNetTrainerWithAttention__nnUNetPlans__3d_fullres/fold_all/checkpoint_final.pth`
 
 ---
 
