@@ -58,4 +58,5 @@ nnUNetv2_predict \
     -device cpu --verbose
 
 OUT_MASK=$(ls "$OUT_DIR"/*.nii.gz 2>/dev/null | head -n 1)
-python $SCRIPT_DIR/strip_mcp.py $INPUT_NAME $OUT_MASK $OUT_DIR/stripped_${INPUT_NAME}.nii.gz
+python $SCRIPT_DIR/strip_mcp.py $INPUT_IMAGE $OUT_MASK $OUT_DIR
+mv $OUT_MASK $OUT_DIR/mask_${INPUT_NAME}.nii.gz
