@@ -3,6 +3,7 @@
 ## Prerequisites
 
 - Install our in-house customized **nnUNet**
+  - `https://github.com/ManskeLab/multichannel_attention_nnUNet.git`
 - Soft-tissue–stripped MCP joint images from **HR-pQCT** or **SR-CBCT**
   - With **MC** and **PP** bone masks
 - Atlas, located in:
