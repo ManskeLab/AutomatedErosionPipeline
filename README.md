@@ -61,7 +61,7 @@ sbatch candidate_erosions/get_candidate_erosions.sh \
   $CLOSED_EDGE_MASK \
   $OUTPUT_DIR
 ```
-### 6.. Go through erosions candidates and create a folder of erosion ROIs.
+### 6. Go through erosions candidates and create a folder of erosion ROIs.
 ### 7. Run the folder through erosion nnUNet.
 ```bash
 sbatch erosion_model/batch_predict.sh \
