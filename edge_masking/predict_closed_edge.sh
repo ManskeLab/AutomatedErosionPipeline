@@ -22,13 +22,21 @@ which python
 python -m pip list
 echo
 
-DATA_DIR=$1
-OUT_DIR=$2
+INPUT_IMAGE=$1
+INPUT_EDGE=$2
+OUT_DIR=$3
 
 INPUT_DIR=/work/manske_lab/jobs/mcp_closed_edge
 export nnUNet_raw=$INPUT_DIR/nnUNet_raw
 export nnUNet_preprocessed=$INPUT_DIR/nnUNet_preprocessed
 export nnUNet_results=$INPUT_DIR/nnUNet_results
+
+INPUT_NAME=${INPUT_IMAGE##*/}
+INPUT_NAME=${INPUT_NAME%%.*}
+DATA_DIR=$INPUT_DIR/Dataset001_mcp/imagesTs/$INPUT_NAME
+mkdir -p $DATA_DIR
+cp $INPUT_IMAGE $DATA_DIR/${INPUT_NAME}_0000.nii.gz
+cp $INPUT_EDGE $DATA_DIR/${INPUT_NAME}_0001.nii.gz
 
 mkdir $OUT_DIR
 
