@@ -37,26 +37,29 @@ export nnUNet_results=$INPUT_DIR/nnUNet_results
 
 INPUT_NAME=${INPUT_IMAGE##*/}
 INPUT_NAME=${INPUT_NAME%%.*}
-DATA_DIR=$INPUT_DIR/Dataset001_mcp/imagesTs/$INPUT_NAME
+DATA_DIR=$INPUT_DIR/nnUNet_raw/Dataset001_hand/imagesTs/$INPUT_NAME
 mkdir -p $DATA_DIR
 cp $INPUT_IMAGE $DATA_DIR/${INPUT_NAME}_0000.nii.gz
+
+# echo python $SCRIPT_DIR/config_metadata.py $DATA_DIR/${INPUT_NAME}_0000.nii.gz --spacing 0.25 0.25 0.25
+# python $SCRIPT_DIR/config_metadata.py $DATA_DIR/${INPUT_NAME}_0000.nii.gz --spacing 0.25 0.25 0.25
 
 mkdir -p $OUT_DIR
 
 echo nnUNetv2_predict \
-    -d Dataset001_mcp -c 3d_fullres -tr nnUNetTrainer \
+    -d Dataset001_hand -c 3d_fullres -tr nnUNetTrainer \
     -p nnUNetPlans -f all \
     -i "$DATA_DIR" \
     -o "$OUT_DIR" \
     -device cpu --verbose
 
 nnUNetv2_predict \
-    -d Dataset001_mcp -c 3d_fullres -tr nnUNetTrainer \
+    -d Dataset001_hand -c 3d_fullres -tr nnUNetTrainer \
     -p nnUNetPlans -f all \
     -i "$DATA_DIR" \
     -o "$OUT_DIR" \
     -device cpu --verbose
 
-OUT_MASK=$(ls "$OUT_DIR"/*.nii.gz 2>/dev/null | head -n 1)
-python $SCRIPT_DIR/strip_mcp.py $INPUT_IMAGE $OUT_MASK $OUT_DIR
+OUT_MASK=$OUT_DIR/$INPUT_NAME.nii.gz
+python $SCRIPT_DIR/strip_mcp.py --image $INPUT_IMAGE --mask $OUT_MASK --out $OUT_DIR
 mv $OUT_MASK $OUT_DIR/mask_${INPUT_NAME}.nii.gz

@@ -33,7 +33,7 @@ export nnUNet_results=$INPUT_DIR/nnUNet_results
 
 INPUT_NAME=${INPUT_IMAGE##*/}
 INPUT_NAME=${INPUT_NAME%%.*}
-DATA_DIR=$INPUT_DIR/Dataset001_mcp/imagesTs/$INPUT_NAME
+DATA_DIR=$INPUT_DIR/nnUNet_raw/Dataset001_mcp/imagesTs/$INPUT_NAME
 mkdir -p $DATA_DIR
 cp $INPUT_IMAGE $DATA_DIR/${INPUT_NAME}_0000.nii.gz
 cp $INPUT_EDGE $DATA_DIR/${INPUT_NAME}_0001.nii.gz
