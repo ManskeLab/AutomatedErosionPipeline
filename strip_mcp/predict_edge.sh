@@ -41,8 +41,8 @@ DATA_DIR=$INPUT_DIR/nnUNet_raw/Dataset001_hand/imagesTs/$INPUT_NAME
 mkdir -p $DATA_DIR
 cp $INPUT_IMAGE $DATA_DIR/${INPUT_NAME}_0000.nii.gz
 
-# echo python $SCRIPT_DIR/config_metadata.py $DATA_DIR/${INPUT_NAME}_0000.nii.gz --spacing 0.25 0.25 0.25
-# python $SCRIPT_DIR/config_metadata.py $DATA_DIR/${INPUT_NAME}_0000.nii.gz --spacing 0.25 0.25 0.25
+# echo python $SCRIPT_DIR/config_metadata.py $DATA_DIR/${INPUT_NAME}_0000.nii.gz --spacing 1.0 1.0 1.0
+# python $SCRIPT_DIR/config_metadata.py $DATA_DIR/${INPUT_NAME}_0000.nii.gz --spacing 1.0 1.0 1.0
 
 mkdir -p $OUT_DIR
 
