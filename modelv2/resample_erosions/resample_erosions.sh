@@ -12,7 +12,7 @@
 set -euo pipefail
 
 # --- paths (edit if needed) -------------------------------------------------
-IMAGES_TR=/work/manske_lab/jobs/mcp_erosion/nnUNet_raw/Dataset001_mcp/imagesTr
+IMAGES_TR=/work/manske_lab/jobs/mcp_erosion/nnUNet_raw/Dataset001_mcp/labelsTr
 MCP_ROOT=/work/manske_lab/images/hrpqct/rair/rair_mcp
 OUT_DIR=/work/manske_lab/images/hrpqct/rair/erosions_full
 MATCH_CSV=/work/manske_lab/images/hrpqct/rair/nnUNet_matches_clean.csv
