@@ -16,7 +16,10 @@ IMAGES_TR=/work/manske_lab/jobs/mcp_erosion/nnUNet_raw/Dataset001_mcp/imagesTr
 MCP_ROOT=/work/manske_lab/images/hrpqct/rair/rair_mcp
 OUT_DIR=/work/manske_lab/images/hrpqct/rair/erosions_full
 MATCH_CSV=/work/manske_lab/images/hrpqct/rair/nnUNet_matches_clean.csv
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+SCRIPT_DIR=$(scontrol show job $SLURM_JOBID | awk -F= '/Command=/{print $2}')
+SCRIPT_DIR=($SCRIPT_DIR)
+SCRIPT_DIR=$(dirname ${SCRIPT_DIR[0]})
 
 # --- environment ------------------------------------------------------------
 # Uses the conda `base` env (SimpleITK must be installed there).
