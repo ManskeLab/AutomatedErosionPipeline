@@ -131,8 +131,14 @@ def build_label_lookup(csv_path: Path):
     return lookup
 
 
-def resample_to_reference(src_path, ref_path, out_path, interpolator, default_value):
-    src = sitk.ReadImage(str(src_path))
+def is_empty(img):
+    """True if the erosion label has no foreground (all voxels == 0)."""
+    stats = sitk.StatisticsImageFilter()
+    stats.Execute(img)
+    return stats.GetMinimum() == 0 and stats.GetMaximum() == 0
+
+
+def resample_to_reference(src, ref_path, out_path, interpolator, default_value):
     ref = sitk.ReadImage(str(ref_path))
     out = sitk.Resample(
         src,
@@ -262,6 +268,16 @@ def main():
                       f"mcp{info['mcp']}_{info['cohort']}_{info['num']}_"
                       f"erosion{info['ero']} (tp {tp})")
 
+        # Skip erosions whose label is empty (no foreground). Only checkable when
+        # actually reading the image (i.e. not in --dry-run).
+        src_img = None
+        if not args.dry_run:
+            src_img = sitk.ReadImage(str(src))
+            if is_empty(src_img):
+                print(f"  SKIP  {src.name}: empty erosion (no foreground)")
+                n_skip += 1
+                continue
+
         out_stem = (f"mcp{info['mcp']}_{info['cohort']}_{info['num']}"
                     f"_erosion_{info['ero']}")
         if out_stem in used_stems:                # never silently overwrite
@@ -283,11 +299,12 @@ def main():
         print(f"  OK    {src.name} -> {out.name}  (ref tp={tp})")
         if not args.dry_run:
             out_img, ref_img = resample_to_reference(
-                src, ref, out, INTERPOLATORS[args.interp], args.default_value)
+                src_img, ref, out, INTERPOLATORS[args.interp], args.default_value)
             if not args.no_snapshot:
                 png = snap_dir / f"{out_stem}.png"
                 if not save_sagittal_snapshot(out_img, ref_img, png):
-                    print(f"  WARN  {src.name}: empty erosion, no snapshot")
+                    print(f"  WARN  {src.name}: no foreground after resample, "
+                          f"no snapshot")
         n_ok += 1
 
     print(f"\nDone. {n_ok} resampled, {n_skip} skipped"
