@@ -484,15 +484,20 @@ def segment_erosions(atlas_path, ra_path, edge_path, ra_mask_path, sr, output_di
         patch_atlas = atlas_np[zmin:zmax+1, ymin:ymax+1, xmin:xmax+1]
         patch_label = erosion[zmin:zmax+1, ymin:ymax+1, xmin:xmax+1]
 
+        # Physical origin of the crop corner (index order is x, y, z for SimpleITK)
+        # so the patch keeps its true position in the full image and can be
+        # resampled back to full size later (do NOT use ra.GetOrigin() here).
+        crop_origin = ra.TransformIndexToPhysicalPoint((int(xmin), int(ymin), int(zmin)))
+
         # Stack channels and convert to SimpleITK
         patch_input = np.stack([patch_ra, patch_edge, patch_atlas], axis=-1)
         patch_input_img = sitk.GetImageFromArray(patch_input)
-        patch_input_img.SetOrigin(ra.GetOrigin())
+        patch_input_img.SetOrigin(crop_origin)
         patch_input_img.SetSpacing(ra.GetSpacing())
         patch_input_img.SetDirection(ra.GetDirection())
 
         patch_label_img = sitk.GetImageFromArray(patch_label.astype(np.uint8))
-        patch_label_img.SetOrigin(ra.GetOrigin())
+        patch_label_img.SetOrigin(crop_origin)
         patch_label_img.SetSpacing(ra.GetSpacing())
         patch_label_img.SetDirection(ra.GetDirection())
 
@@ -506,6 +511,10 @@ def segment_erosions(atlas_path, ra_path, edge_path, ra_mask_path, sr, output_di
     final_mask_img.CopyInformation(ra)
     sitk.WriteImage(final_mask_img, os.path.join(output_dir, subject + "_labeled.nii.gz"))
     print(f"Combined labeled erosion mask saved to: {subject}_labeled.nii.gz")
+
+    if not all_metrics:
+        print(f"No erosions found for {subject}; skipping metrics CSV.")
+        return
 
     csv_path = os.path.join(output_dir, f"{subject}.csv")
 
