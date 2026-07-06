@@ -41,8 +41,11 @@ DATA_DIR=$INPUT_DIR/nnUNet_raw/Dataset001_hand/imagesTs/$INPUT_NAME
 mkdir -p $DATA_DIR
 cp $INPUT_IMAGE $DATA_DIR/${INPUT_NAME}_0000.nii.gz
 
-# echo python $SCRIPT_DIR/config_metadata.py $DATA_DIR/${INPUT_NAME}_0000.nii.gz --spacing 1.0 1.0 1.0
-# python $SCRIPT_DIR/config_metadata.py $DATA_DIR/${INPUT_NAME}_0000.nii.gz --spacing 1.0 1.0 1.0
+# Force spacing metadata to 1.0mm (no resampling) to match the hand model's
+# training convention; without this, native HR-pQCT spacing makes nnUNet
+# rescale the image and the strip mask comes out wrong.
+echo python $SCRIPT_DIR/config_metadata.py $DATA_DIR/${INPUT_NAME}_0000.nii.gz --spacing 1.0 1.0 1.0
+python $SCRIPT_DIR/config_metadata.py $DATA_DIR/${INPUT_NAME}_0000.nii.gz --spacing 1.0 1.0 1.0
 
 mkdir -p $OUT_DIR
 

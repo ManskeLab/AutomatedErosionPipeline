@@ -441,22 +441,10 @@ def segment_erosions(atlas_path, ra_path, edge_path, ra_mask_path, sr, output_di
 
         flag=""
 
-        # Print metrics for this erosion
+        # Print metrics for this erosion (no size filtering — keep all erosions)
         metrics = compute_erosion_metrics(erosion, ra, f"{subject}_erosion{i}")
         if metrics is None:
             continue
-        if metrics["SurfaceArea_mm2"] > 70 or metrics["Volume_mm3"] > 20:
-            print(f"Skipping erosion {i} due to size filter.")
-            flag="_TOO_BIG"
-            # continue
-        if metrics["Volume_mm3"] < 0.5:
-            print(f"Skipping erosion {i} due to size filter.")
-            flag="_TOO_SMALL"
-            # continue
-        if metrics["Elongation"] > 4:
-            print(f"Skipping erosion {i} due to size filter.")
-            flag="_TOO_FLAT"
-            # continue
         for k, v in metrics.items():
             print(f"{k}: {v}")
 

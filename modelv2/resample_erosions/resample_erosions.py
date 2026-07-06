@@ -138,6 +138,42 @@ def is_empty(img):
     return stats.GetMinimum() == 0 and stats.GetMaximum() == 0
 
 
+def physical_bounds(img):
+    """World-coordinate min/max corner of the whole image grid."""
+    size = img.GetSize()
+    corners = [img.TransformIndexToPhysicalPoint(
+                   (i * (size[0] - 1), j * (size[1] - 1), k * (size[2] - 1)))
+               for i in (0, 1) for j in (0, 1) for k in (0, 1)]
+    lo = [min(c[d] for c in corners) for d in range(3)]
+    hi = [max(c[d] for c in corners) for d in range(3)]
+    return lo, hi
+
+
+def describe_geometry(tag, img):
+    lo, hi = physical_bounds(img)
+    fmt = lambda v: "[" + ", ".join(f"{x:.3f}" for x in v) + "]"
+    print(f"    {tag}")
+    print(f"      size     {tuple(img.GetSize())}")
+    print(f"      spacing  {fmt(img.GetSpacing())}")
+    print(f"      origin   {fmt(img.GetOrigin())}")
+    print(f"      direction{fmt(img.GetDirection())}")
+    print(f"      world_lo {fmt(lo)}")
+    print(f"      world_hi {fmt(hi)}")
+
+
+def resample_to_reference(src, ref_path, out_path, interpolator, default_value):
+    ref = sitk.ReadImage(str(ref_path))
+    out = sitk.Resample(
+        src,
+        ref,
+        sitk.Transform(),          # identity: align by physical coordinates
+        interpolator,
+        default_value,
+        src.GetPixelID(),
+    )
+    sitk.WriteImage(out, str(out_path), useCompression=True)
+
+
 def resample_to_reference(src, ref_path, out_path, interpolator, default_value):
     ref = sitk.ReadImage(str(ref_path))
     out = sitk.Resample(
@@ -215,6 +251,9 @@ def main():
                     help="Where snapshot PNGs go (default: <out-dir>/snapshots)")
     ap.add_argument("--dry-run", action="store_true",
                     help="Report what would happen without writing anything")
+    ap.add_argument("--inspect", type=int, default=0, metavar="N",
+                    help="Diagnostic: print crop vs reference geometry + physical "
+                         "overlap for the first N resolvable erosions, then exit")
     args = ap.parse_args()
 
     if not args.imagesTr.is_dir():
@@ -294,6 +333,21 @@ def main():
         if not ref.exists():
             print(f"  SKIP  {src.name}: reference missing {ref}")
             n_skip += 1
+            continue
+
+        if args.inspect:
+            ero_img = src_img if src_img is not None else sitk.ReadImage(str(src))
+            ref_img = sitk.ReadImage(str(ref))
+            elo, ehi = physical_bounds(ero_img)
+            rlo, rhi = physical_bounds(ref_img)
+            overlap = all(elo[d] < rhi[d] and ehi[d] > rlo[d] for d in range(3))
+            print(f"\n=== {src.name}  ->  {ref.name} ===")
+            describe_geometry("EROSION crop:", ero_img)
+            describe_geometry("REFERENCE   :", ref_img)
+            print(f"    physical boxes overlap: {overlap}")
+            n_ok += 1
+            if n_ok >= args.inspect:
+                break
             continue
 
         print(f"  OK    {src.name} -> {out.name}  (ref tp={tp})")
