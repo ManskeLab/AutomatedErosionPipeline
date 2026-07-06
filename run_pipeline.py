@@ -165,7 +165,9 @@ def main():
         j_pred = sub.submit(S_PREDICT,
                             [d_cand_mc, d_cand_pp, d_ero_in, d_pred, key],
                             deps=[j_cand_mc, j_cand_pp], name=f"pred_{key}")
-        sub.submit(S_COMBINE, [d_pred, img, out_file],
+        # predictions live in the 1mm stripped space; resample there, then stamp
+        # the original native-spacing affine (img) back onto the output.
+        sub.submit(S_COMBINE, [d_pred, stripped, out_file, img],
                    deps=[j_pred], name=f"comb_{key}")
         n_ok += 1
         print()

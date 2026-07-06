@@ -38,16 +38,20 @@ export nnUNet_results=$INPUT_DIR/nnUNet_results
 INPUT_NAME=${INPUT_IMAGE##*/}
 INPUT_NAME=${INPUT_NAME%%.*}
 DATA_DIR=$INPUT_DIR/nnUNet_raw/Dataset001_hand/imagesTs/$INPUT_NAME
-mkdir -p $DATA_DIR
-cp $INPUT_IMAGE $DATA_DIR/${INPUT_NAME}_0000.nii.gz
+mkdir -p $DATA_DIR $OUT_DIR
 
-# Force spacing metadata to 1.0mm (no resampling) to match the hand model's
-# training convention; without this, native HR-pQCT spacing makes nnUNet
-# rescale the image and the strip mask comes out wrong.
-echo python $SCRIPT_DIR/config_metadata.py $DATA_DIR/${INPUT_NAME}_0000.nii.gz --spacing 1.0 1.0 1.0
-python $SCRIPT_DIR/config_metadata.py $DATA_DIR/${INPUT_NAME}_0000.nii.gz --spacing 1.0 1.0 1.0
+# The whole pipeline runs at 1.0mm spacing (metadata relabel, NO resampling)
+# because every nnUNet model was trained on 1.0mm data. Native HR-pQCT spacing
+# makes nnUNet rescale the image ~16x and produce garbage masks. We make a
+# clean-named 1mm copy and strip THAT, so the stripped image (and every later
+# stage) is 1mm too. The true affine is stamped back on at the combine step.
+IN1MM_DIR=$OUT_DIR/_in1mm
+mkdir -p $IN1MM_DIR
+IMG_1MM=$IN1MM_DIR/${INPUT_NAME}.nii.gz
+cp $INPUT_IMAGE $IMG_1MM
+python $SCRIPT_DIR/config_metadata.py $IMG_1MM --spacing 1.0 1.0 1.0
 
-mkdir -p $OUT_DIR
+cp $IMG_1MM $DATA_DIR/${INPUT_NAME}_0000.nii.gz
 
 echo nnUNetv2_predict \
     -d Dataset001_hand -c 3d_fullres -tr nnUNetTrainer \
@@ -64,5 +68,6 @@ nnUNetv2_predict \
     -device cpu --verbose
 
 OUT_MASK=$OUT_DIR/$INPUT_NAME.nii.gz
-python $SCRIPT_DIR/strip_mcp.py --image $INPUT_IMAGE --mask $OUT_MASK --out $OUT_DIR
+# Strip the 1mm image (not the raw one) so stripped_<name>.nii.gz is 1mm.
+python $SCRIPT_DIR/strip_mcp.py --image $IMG_1MM --mask $OUT_MASK --out $OUT_DIR
 mv $OUT_MASK $OUT_DIR/mask_${INPUT_NAME}.nii.gz
