@@ -20,7 +20,11 @@ SCRIPT_DIR=$(scontrol show job $SLURM_JOBID | awk -F= '/Command=/{print $2}')
 SCRIPT_DIR=($SCRIPT_DIR)
 SCRIPT_DIR=$(dirname ${SCRIPT_DIR[0]})
 
-WORK_DIR=$1
-INPUT_IMAGE=$2
+WORK_DIR=${1:-/work/manske_lab/jobs/actus_erosion/work}
+INPUT_IMAGE=${2:-/work/manske_lab/images/hrpqct/actus/ACTUS_clean/mcp/disease/ACTUS_001/0/ACTUS_001_0_mcp3.nii.gz}
 
-python $SCRIPT_DIR/diagnose_pipeline.py --work-dir $WORK_DIR --input $INPUT_IMAGE
+echo "WORK_DIR=$WORK_DIR"
+echo "INPUT_IMAGE=$INPUT_IMAGE"
+echo
+
+python $SCRIPT_DIR/diagnose_pipeline.py --work-dir "$WORK_DIR" --input "$INPUT_IMAGE"
